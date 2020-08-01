@@ -1,20 +1,8 @@
-#include <stdio.h>
-#include <errno.h>
-#include <unistd.h>
-#include <string.h>
-#include <fcntl.h>
-#include <stdlib.h>
-
-char		*ft_strdup(const char *str);
+#include "tester.h"
 
 int			main(void)
 {
-	char	*str = "test";
-	char	*out;
-
-	out = ft_strdup(str);
-	printf("out: %s\n", out);
-	printf("errno: %s\n", strerror(errno));
-	free(out);
+	if ((test_mandatory()))
+		return (1);
 	return (0);
 }
