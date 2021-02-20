@@ -41,6 +41,8 @@ endif
 
 OBJ = $(SRC:.c=.o)
 
+OBJBONUS = $(SRCBONUS:.c=.o)
+
 run_raw: all
 	./$(NAME) 2> /dev/null
 
@@ -60,6 +62,7 @@ $(NAME): libasm_all $(OBJ)
 
 clean: libasm_fclean
 	@rm -f $(OBJ)
+	@rm -f $(OBJBONUS)
 
 fclean: clean
 	@rm -f $(NAME)
