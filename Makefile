@@ -1,79 +1,46 @@
-LIBASM_PATH = ./srcs
+NAME = libasm.a
 
-MAKE = make --no-print-directory
+SRCS = ft_strlen.s					\
+	   ft_strcpy.s					\
+	   ft_strcmp.s					\
+	   ft_strdup.s					\
+	   ft_write.s					\
+	   ft_read.s
 
-CC = gcc
+SRCS_BONUS = ft_atoi_base_bonus.s			\
+			 ft_list_push_front_bonus.s		\
+			 ft_list_size_bonus.s			\
+			 ft_list_sort_bonus.s			\
+			 ft_list_remove_if_bonus.s
 
-CCFLAGS = -I. -Wall -Wextra -Wno-nonnull
+NASM = nasm
 
-LDFLAGS = -L$(LIBASM_PATH) -lasm
+NASM_FLAGS = -f macho64
 
-NAME = runtest
+OBJS = $(SRCS:.s=.o)
 
-SRC = main.c \
-	  helper.c \
-	  test/ft_strlen_test.c \
-	  test/ft_strcpy_test.c \
-	  test/ft_strcmp_test.c \
-	  test/ft_write_test.c \
-	  test/ft_read_test.c \
-	  test/ft_strdup_test.c
+OBJS_BONUS = $(SRCS_BONUS:.s=.o)
 
-SRCBONUS = helper_list.c \
-		   test/ft_atoi_base_test.c \
-		   test/ft_list_size_test.c \
-		   test/ft_list_push_front_test.c \
-		   test/ft_list_sort_test.c \
-		   test/ft_list_remove_if_test.c \
-		   functions_reference/ref_ft_atoi_base.c \
-		   functions_reference/ref_ft_list_size.c \
-		   functions_reference/ref_ft_list_push_front.c \
-		   functions_reference/ref_ft_list_sort.c \
-		   functions_reference/ref_ft_list_remove_if.c
+%.o : %.s
+	@$(NASM) $(NASM_FLAGS) $<
 
-LIBASM_ALL = all
+$(NAME) : $(OBJS)
+	@ar rcs $(NAME) $(OBJS)
+	@echo 'make done!'
 
-ifeq ($(LIBASM_TEST_BONUS),yes)
-	SRC += $(SRCBONUS)
-	CCFLAGS += -D LIBASM_TEST_BONUS
-	LIBASM_ALL = bonus
-endif
+all : $(NAME)
 
-OBJ = $(SRC:.c=.o)
+clean :
+	@rm -f $(OBJS)
+	@rm -f $(OBJS_BONUS)
+	@echo 'clean up!'
 
-OBJBONUS = $(SRCBONUS:.c=.o)
-
-run_raw: all
-	./$(NAME) 2> /dev/null
-
-run_debug: all
-	./$(NAME)
-
-bonus:
-	$(MAKE) LIBASM_TEST_BONUS=yes
-
-all: $(NAME)
-
-$(NAME): libasm_all $(OBJ)
-	$(CC) -o $@ $(OBJ) $(LDFLAGS)
-
-%.o: %.c
-	$(CC) $(CCFLAGS) -c -o $@ $<
-
-clean: libasm_fclean
-	@rm -f $(OBJ)
-	@rm -f $(OBJBONUS)
-
-fclean: clean
+fclean : clean
 	@rm -f $(NAME)
 
-re: libasm_fclean libasm_all fclean all
+re : fclean all
 
+bonus : $(OBJS_BONUS) all
+	@ar rcs $(NAME) $(OBJS_BONUS)
 
-libasm_all:
-	$(MAKE) -C $(LIBASM_PATH) $(LIBASM_ALL)
-
-libasm_fclean:
-	$(MAKE) -C $(LIBASM_PATH) fclean
-
-.PHONY: run_raw run_debug all clean fclean re libasm_all libasm_fclean
+.PHONY : all clean fclean re bonus
